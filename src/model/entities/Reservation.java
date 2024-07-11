@@ -2,6 +2,7 @@ package model.entities;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class Reservation {
@@ -18,6 +19,7 @@ public class Reservation {
 		this.roomNumber = roomNumber;
 		this.checkIn = checkInDate;
 		this.checkOut = checkOutDate;
+
 	}
 
 	public Integer getRoomNumber() {
@@ -40,9 +42,21 @@ public class Reservation {
 		return Duration.between(this.checkIn.atStartOfDay(), this.checkOut.atStartOfDay()).toDays();
 	}
 	
-	public void updateDates(LocalDate checkIn, LocalDate checkOut) {
+	public String updateDates(LocalDate checkIn, LocalDate checkOut) {
+		
+		if (!checkIn.isBefore(checkOut)) {
+			return "Check-in date must be before check-out date.";
+		} 
+		
+		if (checkIn.isBefore(LocalDate.now(ZoneId.systemDefault())) || 
+			checkOut.isBefore(LocalDate.now(ZoneId.systemDefault()))) {
+			return "Check-in date must be a future date.";
+		} 
+		
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
+		
+		return null;
 	}
 	
 	@Override
@@ -61,8 +75,7 @@ public class Reservation {
 //	private static final LocalDate setDate(String date) {
 //		return LocalDate.parse(date, DTF);
 //	}
-	
-	
+		
 	public static String dateToString(LocalDate date) {
 		return DTF.format(date);
 	}
