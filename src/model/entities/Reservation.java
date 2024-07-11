@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
+import model.exceptions.DomainException;
+
 public class Reservation {
 
 	public static DateTimeFormatter DTF = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -15,10 +17,17 @@ public class Reservation {
 	
 	public Reservation() {}
 
-	public Reservation(Integer roomNumber, LocalDate checkInDate, LocalDate checkOutDate) {
+	public Reservation(Integer roomNumber, LocalDate checkIn, LocalDate checkOut) throws DomainException {
+		if (!checkIn.isBefore(checkOut)) {
+			throw new DomainException("Check-in date must be before check-out date.");
+		} 
+		if (checkIn.isBefore(LocalDate.now(ZoneId.systemDefault())) || 
+				checkOut.isBefore(LocalDate.now(ZoneId.systemDefault()))) {
+				throw new DomainException("Check-in date must be a future date.");
+		} 
 		this.roomNumber = roomNumber;
-		this.checkIn = checkInDate;
-		this.checkOut = checkOutDate;
+		this.checkIn = checkIn;
+		this.checkOut = checkOut;
 
 	}
 
@@ -42,15 +51,15 @@ public class Reservation {
 		return Duration.between(this.checkIn.atStartOfDay(), this.checkOut.atStartOfDay()).toDays();
 	}
 	
-	public void updateDates(LocalDate checkIn, LocalDate checkOut) {
+	public void updateDates(LocalDate checkIn, LocalDate checkOut) throws DomainException {
 		
 		if (!checkIn.isBefore(checkOut)) {
-			throw new IllegalArgumentException("Check-in date must be before check-out date.");
+			throw new DomainException("Check-in date must be before check-out date.");
 		} 
 		
 		if (checkIn.isBefore(LocalDate.now(ZoneId.systemDefault())) || 
 			checkOut.isBefore(LocalDate.now(ZoneId.systemDefault()))) {
-			throw new IllegalArgumentException("Check-in date must be a future date.");
+			throw new DomainException("Check-in date must be a future date.");
 		} 
 		
 		this.checkIn = checkIn;
