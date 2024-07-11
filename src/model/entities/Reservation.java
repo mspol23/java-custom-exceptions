@@ -42,21 +42,19 @@ public class Reservation {
 		return Duration.between(this.checkIn.atStartOfDay(), this.checkOut.atStartOfDay()).toDays();
 	}
 	
-	public String updateDates(LocalDate checkIn, LocalDate checkOut) {
+	public void updateDates(LocalDate checkIn, LocalDate checkOut) {
 		
 		if (!checkIn.isBefore(checkOut)) {
-			return "Check-in date must be before check-out date.";
+			throw new IllegalArgumentException("Check-in date must be before check-out date.");
 		} 
 		
 		if (checkIn.isBefore(LocalDate.now(ZoneId.systemDefault())) || 
 			checkOut.isBefore(LocalDate.now(ZoneId.systemDefault()))) {
-			return "Check-in date must be a future date.";
+			throw new IllegalArgumentException("Check-in date must be a future date.");
 		} 
 		
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
-		
-		return null;
 	}
 	
 	@Override
